@@ -11,6 +11,5 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::post('/file/upload', 'File\FileController@upload')->name('file.upload');
+Route::get('/', 'File\FileController@read')->name('file.read');
