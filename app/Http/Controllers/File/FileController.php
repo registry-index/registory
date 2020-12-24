@@ -4,9 +4,10 @@ namespace App\Http\Controllers\File;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Util\Divider;
 use \Spatie\PdfToText\Pdf;
 
-class FileController extends Controller
+class FileController extends Controller{
 
     const PDF_EXTENSION =  '.pdf';
 
@@ -24,14 +25,11 @@ class FileController extends Controller
     }
 
     public function read(){
-        $path = storage_path() . '/app/pdfs/' . "1607443238.pdf";
-        $text = Pdf::getText($path);
-
-        dd($text);
+        //これは暫定的なやつ
+        $path = storage_path() . '/app/pdfs/' . "1.pdf";
+        $option = [];
+        $text = Pdf::getText($path,null,$option);
+        $divider = new Divider($text);
+        $divider->run();
     }
-
-
-
-
-
 }
