@@ -10,16 +10,54 @@ class Divider {
     }
 
     public function run(){
-        $data = $this->trimSpace($this->text);
-        $data = $this->divideToBlocks($data);
-        $data = $this->divideToLines($data);
-        dd($data);
+        $data= $this->text;
+        // $data = $this->trimSpace($this->text);
+        $title = $this->getTitle($data);
+        // $table = $this->getTable($data);
+        // $data = $this->divideToBlocks($data);
+        // $data = $this->divideToLines($data);
         // return $lines;
     }
 
+    /**
+     * タイトル部分（表の外側）を取得する
+     */
+    private function getTitle($data) :array
+    {
+        $table = strstr($data, '┏' , true);
+        $arr = explode("\n",$table);
+
+        if(count($arr) === 9){
+            $ret['date'] = $arr[0];
+            $ret['time'] = $arr[2];
+            $ret['address'] = $arr[6];
+            $ret['type'] = $this->getPropertyType($arr[7]);
+        }else{
+            //エラーをはく。タイトル部分の書式が異なります。
+        }
+        return $ret;
+    }
+
+    /**
+     * 物件タイプを取得する
+     */
+    private function getPropertyType(string $str):string
+    {
+        $startNum = mb_strpos($str,'（') + 1;
+        $endNum = mb_strpos($str,'）');
+        $length = $endNum - $startNum;
+        return mb_substr($str, $startNum, $length);
+    }
+
+    private function getTable($data){
+        return strstr($this->trimSpace($data), '┏');
+    }
+
+
     //全角と半角スペースを削除する
     private function trimSpace($text){
-        return preg_replace("/( |　|\n)/", "", $text);
+        // return preg_replace("/( |　|\n)/", "", $text);
+        return preg_replace("/(\n)/", "", $text);
     }
 
     private function divideToBlocks(string $text):array{
