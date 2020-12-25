@@ -10,13 +10,9 @@ class Divider {
     }
 
     public function run(){
-        $data= $this->text;
-        // $data = $this->trimSpace($this->text);
-        $title = $this->getTitle($data);
-        // $table = $this->getTable($data);
-        // $data = $this->divideToBlocks($data);
-        // $data = $this->divideToLines($data);
-        // return $lines;
+        $title = $this->getTitle($this->text);
+        $table = $this->getTable($this->text);
+        dd($title,$table);
     }
 
     /**
@@ -49,71 +45,44 @@ class Divider {
         return mb_substr($str, $startNum, $length);
     }
 
+    /**
+     * テーブルの情報を取得する
+     */
     private function getTable($data){
-        return strstr($this->trimSpace($data), '┏');
-    }
-
-
-    //全角と半角スペースを削除する
-    private function trimSpace($text){
-        // return preg_replace("/( |　|\n)/", "", $text);
-        return preg_replace("/(\n)/", "", $text);
-    }
-
-    private function divideToBlocks(string $text):array{
-        return explode('┏',$text);
-    }
-
-    private function divideToLines(array $blocks):array{
+        $table =  strstr($this->trimSpace($data), '┏');
+        $pattern = "/[┠┏┗].+?[┓┨┛]/u";
+        $lines = preg_split($pattern,$table,-1,PREG_SPLIT_NO_EMPTY);
         $ret = [];
-        foreach($blocks as  $i => $block){
-            $rows =  explode('┨',$block);
-            foreach($rows as $j => $row){
-                $lines = explode('┃',$row);
-                foreach($lines as $k => $line){
-                    $ret[$i][$j][$k] = explode('│',$line);
-                }
-                // $ret[$i][$j] = array_map('current', array_chunk(array_slice($lines, 1), 2));
-                // $ret[$i][$j] = explode('┃',$row);
+        foreach($lines as $i => $line){
+            $line = trim($line, '┃');
+            $line = rtrim($line, '┃');
+            $cells = explode("┃┃",$line);
+
+            $tmp = [];
+            foreach($cells as $j => $cell){
+                $data = explode("│",$cell);
+                $tmp[] = $data;
             }
+
+            // dump($tmp);
+            $cells = [];
+            foreach($tmp as $key => $row){
+                if($key === 0){
+                    $cells = $tmp[0];
+                }else{
+                    foreach($row as $n=>$mas)
+                    $cells[$n] = $cells[$n] . $mas;
+                }
+            }
+            $ret[$i] =  $cells;
         }
         return $ret;
     }
 
-    // private function divideToLines($rows):array{
-    //     $ret = [];
-    //     foreach($blocks as  $i => $block){
-    //         $ret[$i] = explode('┃',$block);
-    //         // $ret[$i] = array_map('current', array_chunk(array_slice($lines, 1), 2));
-    //         //https://qiita.com/mpyw/items/925e4587a746d8ede8fc
-    //     }
-    //     return $ret;
-    // }
-
-    // public function test($text){
-    //     $text = $this->trimSpace($text);
-    //     $pieces = $this->multiExplode($text);
-    //     $pieces = $this->removeEmptyString($pieces);
-    //     return $pieces;
-    // }
-
-    // // ┃と│で分割
-    // private function multiExplode($text){
-    //     $pattern = '/┃|│/u';
-    //     $pieces =  preg_split($pattern ,$text);
-    //     return $pieces;
-    // }
-
-    // //空文字の要素を削除する
-    // private function removeEmptyString($pieces){
-    //     $pieces = collect($pieces)
-    //     ->filter(function ($value, $key) {
-    //         return !is_string($value) || strlen($value);
-    //     });
-    //     return $pieces->all();
-    // }
-
-    // private function explodeByPragraph($chara){
-    //     //表が3つあるのでまずはそれで分割する？
-    // }
+    /**
+     * スペース、改行、改ページを削除する
+     */
+    private function trimSpace($text){
+        return preg_replace("/( |　|\n|\f)/", "", $text);
+    }
 }

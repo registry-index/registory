@@ -25,11 +25,13 @@ class FileController extends Controller{
     }
 
     public function read(){
-        //これは暫定的なやつ
-        $path = storage_path() . '/app/pdfs/' . "1.pdf";
-        $option = [];
-        $text = Pdf::getText($path,null,$option);
-        $divider = new Divider($text);
-        $divider->run();
+        // for ($i = 1; $i <= 4; $i++) {
+            $path = storage_path() . '/app/pdfs/' . "4" . ".pdf";
+            $option = [];
+            $text = Pdf::getText($path,null,$option);
+            $divider = new Divider($text);
+            $divider->run();
+        // }
+
     }
 }
