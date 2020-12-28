@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Util\Divider;
+use \Spatie\PdfToText\Pdf;
+use App\Models\Property;
+use App\Models\Owner;
+
+class FileController extends Controller{
+
+    const PDF_EXTENSION =  '.pdf';
+
+    public function form(){
+        return view('files.form');
+    }
+
+    public function upload(Request $request)
+    {
+        $unixTime = time();
+        $fileName = $unixTime.self::PDF_EXTENSION;
+        $request->file->storeAs('pdfs',$fileName);
+
+        $path = storage_path() . '/app/pdfs/' . $fileName;
+        $option = [];
+        $text = Pdf::getText($path,null,$option);
+
+        $divider = new Divider($text);
+        $property = Property::storeFromFileData($divider->getHead());
+        Owner::storeFromFileData($divider->getOwners(),$property);
+
+        return redirect('/');
+    }
+}

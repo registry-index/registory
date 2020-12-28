@@ -11,5 +11,13 @@
 |
 */
 
-Route::post('/file/upload', 'File\FileController@upload')->name('file.upload');
-Route::get('/', 'File\FileController@read')->name('file.read');
+Auth::routes();
+
+Route::group(['middleware' => 'auth'], function () {
+    //view関連
+    Route::get('/', 'PropertyController@index')->name('property.index');
+    Route::get('property/{id}', 'PropertyController@show')->name('property.show');
+    //file関連
+    Route::get('/file/form', 'FileController@form')->name('file.form');
+    Route::post('/file/upload', 'FileController@upload')->name('file.upload');
+});

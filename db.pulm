@@ -1,0 +1,40 @@
+@startuml
+
+entity "clients" {
+    + client_id [PK]
+    ==
+    name:varchar(128)
+
+}
+
+entity "users" {
+    + user_id [PK]
+    ==
+    name:varchar(128)
+}
+
+entity "properties" {
+    + property_id [PK]
+    ==
+    #user_id [FK(users,user_id)]
+    address
+    type
+}
+
+entity "owners" {
+    + owner_id [PK]
+    ==
+    #property_id [FK(properties,property_id)]
+    address
+    name
+    ownership_rate
+}
+
+users --o{ properties
+properties --o{ owners
+
+@enduml
+
+
+
+
