@@ -48,31 +48,26 @@ class Divider {
     {
         $tableString =  strstr($this->trimSpace($this->text), '┏');
         $pattern = "/[┠┏┗].+?[┓┨┛]/u";
-        $lines = preg_split($pattern, $tableString, -1, PREG_SPLIT_NO_EMPTY);
+        $rows = preg_split($pattern, $tableString, -1, PREG_SPLIT_NO_EMPTY);
         //テーブルのヘッダー部分を削除
-        array_shift($lines);
-        array_shift($lines);
+        array_shift($rows);
+        array_shift($rows);
 
         $ret = [];
-        foreach($lines as $i => $line){
+        foreach($rows as $i => $row){
             //行頭と行末の┃を削除
-            $line = preg_replace('/^┃+|┃$/','',$line);
-            $cells = explode("┃┃",$line);
+            $row = preg_replace('/^┃+|┃$/','',$row);
+            $lines = explode("┃┃",$row);
 
-            $tmp = [];
-            foreach($cells as $cell){
-                $data = explode("│",$cell);
-                $tmp[] = $data;
-            }
-
-            //セルが複数行にまたぐこともあるため文字列を結合する
             $cells = [];
-            foreach($tmp as $key => $row){
-                if($key === 0){
-                    $cells = $tmp[0];
+            foreach($lines as $j => $line){
+                $atoms = explode("│",$line);
+                //1行目はそのまま代入する。2行目からは文字列を結合する。
+                if($j === 0){
+                    $cells = $atoms;
                 }else{
-                    foreach($row as $n=>$mas)
-                    $cells[$n] = $cells[$n] . $mas;
+                    foreach($atoms as $k => $atom)
+                    $cells[$k] = $cells[$k] . $atom;
                 }
             }
             $ret[$i] =  $cells;

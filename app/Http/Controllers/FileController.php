@@ -11,6 +11,9 @@ use App\Models\Owner;
 
 class FileController extends Controller{
 
+    //todo ファイルサイズは2Mを超えるとエラーが起きるはずなのでエラーを出す(PostTooLargeException)
+
+
     const PDF_EXTENSION =  '.pdf';
 
     public function form(){
@@ -21,11 +24,13 @@ class FileController extends Controller{
     {
         $unixTime = time();
         $fileName = $unixTime.self::PDF_EXTENSION;
+
+        //todo ここら辺はtry,catchでエラーハンドリングする
         $request->file->storeAs('pdfs',$fileName);
 
         $path = storage_path() . '/app/pdfs/' . $fileName;
-        $option = [];
-        $text = Pdf::getText($path,null,$option);
+        $text = Pdf::getText($path,null);
+        //todo 必要であれあばS3にアップロード + localのは削除
 
         $divider = new Divider($text);
         $property = Property::storeFromFileData($divider->getHead());

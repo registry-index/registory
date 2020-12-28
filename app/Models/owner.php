@@ -26,7 +26,7 @@ class Owner extends Model
                     'name' => $owner[2],
                 ];
             }else{
-                //エラーを出力する
+                //todo エラーを出力する
             }
             Owner::create($ownerData);
         }
